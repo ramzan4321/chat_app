@@ -49,7 +49,7 @@
 			  <a class="nav-link" href="{% url 'chat-page' %}"><img src="/media/{{request.user.profile.profile_image}}" class="img-thumbnail rounded-circle p-0 m-0" alt="..." width="30">   <b class="capitalize" style="color: white;">{{request.user.profile.name}}</b></a>
 			</li>
 			<li class="nav-item">
-				<a class="btn btn-danger" href="{% url 'logout-user' %}">Logout<i class="fa fa-ellipsis-v" style="font-size:24px"></i></a>
+				<a class="btn btn-danger" href="{% url 'logout-user' %}">Logout</a>
 				{% else %}
 			<li class="nav-item"></li>
 			<a class="btn btn-danger mx-2" href="{% url 'register' %}">Register</a>
