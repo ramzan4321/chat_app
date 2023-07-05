@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+		.fr {
+			float: right;
+		}
+
+		.fl {
+			float: left;
+		}
+		.message-div {
+			max-width: 70%;
+			min-width: 30%;
+			border: 1px solid aqua;
+			border-radius: 10px;
+			background-color: aquamarine;
+			font-size: 14px;
+		}
+		.message-div h6 {
+			font-size: 14px;
+		}
+		.input-group-prepend {
+			width: 100px;
+		}
+		.capitalize {
+			text-transform: capitalize;
+		}
+		.w_150px {
+			width: 150px;
+		}
+	</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success px-4 justify-content-between">
+		<a class="navbar-brand" href="{% url 'chat-page' %}"><b>ChatApp</b></a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+		<ul class="navbar-nav">
+			{% if request.user.is_authenticated %}
+			<li class="nav-item active mr-4">
+				<a class="nav-link" href="{% url 'editprofile' %}"><b style="color: white;">Edit Profile</b></a>
+			  </li>
+			<li class="nav-item active">
+			  <a class="nav-link" href="{% url 'chat-page' %}"><img src="/media/{{request.user.profile.profile_image}}" class="img-thumbnail rounded-circle p-0 m-0" alt="..." width="30">   <b class="capitalize" style="color: white;">{{request.user.profile.name}}</b></a>
+			</li>
+			<li class="nav-item">
+				<a class="btn btn-danger" href="{% url 'logout-user' %}">Logout<i class="fa fa-ellipsis-v" style="font-size:24px"></i></a>
+				{% else %}
+			<li class="nav-item"></li>
+			<a class="btn btn-danger mx-2" href="{% url 'register' %}">Register</a>
+				<a class="btn btn-danger mx-2" href="{% url 'login-user' %}">Login</a>
+				{% endif %} 
+			</li>
+
+		  </ul>
+		<!-- <div class="collapse navbar-collapse" id="navbarSupportedContent">
+		  
+		</div> -->
+    </nav>
+
+	{% if messages %} {% for message in messages %}
+    <div class="alert alert-{{message.tags}} django-message" role="alert">
+      <strong style="text-transform: capitalize;">{{ message.tags }}!</strong> {{ message }}
+    </div>
+    {% endfor %} {% endif %} 
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Select users to create group</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="mb-3 row form-group">
+                        <label class="col-sm-4 col-form-label">Group Name</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" id="groupname" name="groupname" value="Best Friends">
+                        </div>
+                    </div>
+                    <select class="form-select capitalize" multiple name="group_user">
+                        {% for x in all_users %}
+                        <option value="{{ x.username }}">{{ x.username }}</option>
+                        {% endfor %}
+                    </select>
+                    <!-- <button type="submit">Submit</button> -->
+                  
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create Group</button>
+                  </div>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% block body %} {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+		integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+		crossorigin="anonymous"></script>
+    {% block javascript %} {% endblock %}
+	<script type="text/javascript">
+		setTimeout(function(){ 
+			$('.django-message').fadeOut('slow'); 
+		}, 3000);
+	</script>
+</body>
+</html>

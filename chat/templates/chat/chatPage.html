@@ -1,0 +1,262 @@
+{% extends "chat/layout.html" %}
+{% block body %}
+	<!-- <center>
+		<h1>Hello , Welcome to my chat site ! {{request.user}}</h1>
+	</center>
+	<br>
+	{% if request.user.is_authenticated %}
+	<center> Logout the chat Page <a href="{% url 'logout-user' %}">Logout</a></center>
+	{% endif %} -->
+
+
+	<div class="chat__item__container container-fluid" id="id_chat_item_container" style="font-size: 20px">
+		<div class="row my-3">
+			<div class="col-md-4">
+
+				<div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white my-2" style="width: 380px;overflow-y: scroll;height: 500px;">
+					<span class="fs-5 fw-semibold p-2 bg-light">Chats</span>
+					<div class="list-group list-group-flush border-bottom scrollarea">						  
+						<button class="list-group-item py-3 lh-tight" aria-current="true" data-bs-toggle="modal" data-bs-target="#exampleModal">
+							<div class="d-flex w-100 align-items-center justify-content-center">
+								<strong class="mb-1 capitalize">Create Group</strong>
+								<small class="mb-1" style="font-size: 30px;color: blue;"><b>+</b></small>
+							</div>
+						</button>
+						{% for x in user_list %}
+						<a href="#" onclick="openchat(`{{request.user}}_{{x.user}}`)" class="list-group-item py-3 lh-tight"
+							aria-current="true">
+							<div class="w-100 align-items-center">
+								<strong class="mb-1 capitalize">{{ x.user }}</strong>
+								<br>
+								<small>{{ x.message|slice:"0:50" }}...  <b class="fr">{{ x.date }}</b></small>
+							</div>
+						</a>
+						{% endfor %}
+						{% for y in groups %}
+						<a href="#" onclick="openchat(`g_{{y.chatroom}}`)" class="list-group-item py-3 lh-tight"
+							aria-current="true">
+							<div class="w-100 align-items-center">
+								<strong class="mb-1 capitalize">{{ y.group }} group</strong>
+								<br>
+								<small>{{y.message}}  <b class="fr">{{ y.date }}</b></small>
+							</div>
+						</a>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="py-3" id="message_container" style="height: 450px; overflow-y: scroll;">
+					
+				</div>
+				<div class="row mt-3">
+					<div class="col-md-9">
+						<input class="form-control" type="text" id="id_message_send_input" width="70%" />
+					</div>
+					<div class="col-md-3">
+						<button class="btn btn-outline-success" type="submit" id="id_message_send_button">Send
+							Message</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br />
+
+		<br />
+		<br />
+	</div>
+	{% endblock %}
+	{% block javascript %}
+	<script>
+		var roomno = '{{request.user.username}}_{{request.user.username}}'
+		function openchat(room) {
+			console.log("Room: " + room)
+			var scrollDiv = document.getElementById('message_container');
+			$.ajax({
+				url: "/getmessages",
+				type: "get",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				data: { 'room': room },
+				success: function (response) {
+					if (response['status'] === 'success') {
+						console.log("Successfully!")
+						$('#message_container').empty()
+						var mystr = ""
+						for (var i = 0; i < response['data'].length; i++) {
+							console.log("Data " + (i + 1) + " : " + response['data'][i]['message'])
+							if ('{{request.user.username}}' === response['data'][i]['user']) {
+								const parentDiv = document.getElementById('message_container');
+								const newDiv = document.createElement('div');
+
+								newDiv.style.width = '98%';
+								newDiv.style.clear = 'both';
+
+								const innerDiv = document.createElement('div');
+								innerDiv.classList.add('fr');
+								innerDiv.classList.add('py-2');
+								innerDiv.classList.add('px-4');
+								innerDiv.classList.add('my-2');
+								innerDiv.classList.add('message-div');
+
+								innerDiv.style.textAlign = 'right';
+
+								const heading = document.createElement('h6');
+								var headingText = document.createTextNode(response['data'][i]['user'])
+								heading.appendChild(headingText);
+
+								const para = document.createElement('p');
+								var paraText = document.createTextNode(response['data'][i]['message'])
+								para.appendChild(paraText);
+
+								var dateObj = new Date(response['data'][i]['date']);
+								// Get the hour and minute components
+								var hours = dateObj.getHours();
+								var minutes = dateObj.getMinutes();
+								// Format the time as desired (e.g., HH:MM)
+								var formattedTime = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+
+								const small = document.createElement('small');
+								var smallText = document.createTextNode(formattedTime)
+								small.appendChild(smallText);
+								small.classList.add('fr')
+								
+								innerDiv.appendChild(heading);
+								innerDiv.appendChild(para);
+								innerDiv.appendChild(small);
+
+								newDiv.appendChild(innerDiv)
+								parentDiv.appendChild(newDiv);
+								scrollDiv.scrollTop = scrollDiv.scrollHeight;
+							} else {
+								const parentDiv = document.getElementById('message_container');
+								const newDiv = document.createElement('div');
+
+								newDiv.style.width = '98%';
+								newDiv.style.clear = 'both';
+
+								const innerDiv = document.createElement('div');
+								innerDiv.classList.add('fl');
+								innerDiv.classList.add('py-2');
+								innerDiv.classList.add('px-4');
+								innerDiv.classList.add('my-2');
+								innerDiv.classList.add('message-div');
+
+								const heading = document.createElement('h6');
+								var headingText = document.createTextNode(response['data'][i]['user'])
+								heading.appendChild(headingText);
+
+								const para = document.createElement('p');
+								var paraText = document.createTextNode(response['data'][i]['message'])
+								para.appendChild(paraText);
+
+								var dateObj = new Date(response['data'][i]['date']);
+								// Get the hour and minute components
+								var hours = dateObj.getHours();
+								var minutes = dateObj.getMinutes();
+								// Format the time as desired (e.g., HH:MM)
+								var formattedTime = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+
+								const small = document.createElement('small');
+								var smallText = document.createTextNode(formattedTime)
+								small.appendChild(smallText);
+								small.classList.add('fr')
+								
+								innerDiv.appendChild(heading);
+								innerDiv.appendChild(para);
+								innerDiv.appendChild(small);
+
+								newDiv.appendChild(innerDiv)
+								parentDiv.appendChild(newDiv);
+								scrollDiv.scrollTop = scrollDiv.scrollHeight;
+							}
+						}
+
+					} else {
+						alert("Sorry! " + response['error']);
+					}
+				},
+				error: function (xhr) {
+					alert("request fail");
+				}
+			});
+
+			if (chatSocket) {
+				chatSocket.close();
+			}
+			roomno = room
+			var chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + roomno + "/");
+			console.log(chatSocket)
+			chatSocket.onopen = function (e) {
+				console.log("The connection was setup successfully !");
+			};
+			document.querySelector("#id_message_send_input").focus();
+			document.querySelector("#id_message_send_input").onkeyup = function (e) {
+				if (e.keyCode == 13) {
+					document.querySelector("#id_message_send_button").click();
+				}
+			};
+			document.querySelector("#id_message_send_button").onclick = function (e) {
+				var messageInput = document.querySelector(
+					"#id_message_send_input"
+				).value;
+				chatSocket.send(JSON.stringify({ message: messageInput, username: "{{request.user.username}}" }));
+			};
+			chatSocket.onmessage = function (e) {
+				const data = JSON.parse(e.data);
+
+				const parentDiv = document.getElementById('message_container');
+				const newDiv = document.createElement('div');
+
+				newDiv.style.width = '98%';
+				newDiv.style.clear = 'both';
+
+				const innerDiv = document.createElement('div');
+				if (data.username === '{{request.user.username}}') {
+					innerDiv.classList.add('fr');
+					innerDiv.style.textAlign = 'right';
+				} else {
+					innerDiv.classList.add('fl');
+				}
+				innerDiv.classList.add('py-2');
+				innerDiv.classList.add('px-4');
+				innerDiv.classList.add('my-2');
+				innerDiv.classList.add('message-div');
+
+				const heading = document.createElement('h6');
+				var headingText = document.createTextNode(data.username)
+				heading.appendChild(headingText);
+
+				const para = document.createElement('p');
+				var paraText = document.createTextNode(data.message)
+				para.appendChild(paraText);
+
+				var dateObj = new Date();
+				// Get the hour and minute components
+				var hours = dateObj.getHours();
+				var minutes = dateObj.getMinutes();
+				// Format the time as desired (e.g., HH:MM)
+				var formattedTime = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+
+				const small = document.createElement('small');
+				var smallText = document.createTextNode(formattedTime)
+				small.appendChild(smallText);
+				small.classList.add('fr')
+				
+				innerDiv.appendChild(heading);
+				innerDiv.appendChild(para);
+				innerDiv.appendChild(small);
+
+				newDiv.appendChild(innerDiv)
+				parentDiv.appendChild(newDiv);
+				scrollDiv.scrollTop = scrollDiv.scrollHeight;
+				document.getElementById('id_message_send_input').value = "";
+
+			};
+			chatSocket.onclose = function (e) {
+				console.log("Something unexpected happened !");
+			};
+		}
+	</script>
+	{% endblock %}

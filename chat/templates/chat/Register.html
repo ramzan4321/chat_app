@@ -1,0 +1,58 @@
+{% extends "chat/layout.html" %}
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="card" style="margin-top: 150px;">
+                <div class="card-header text-center">
+                    <h6>Register</h6>
+                </div>
+                <div class="card-body">
+                    <form role="form" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                          <div class="input-group input-group-alternative mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Username</span>
+                            </div>
+                            <input type="text" required class="form-control" placeholder="Username" value=""  name= username >
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group input-group-alternative mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Email</span>
+                            </div>
+                            <input type="email" required class="form-control" placeholder="Email" value="" name=email >
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group input-group-alternative mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">Password</span>
+                            </div>
+                            <input type="password" required class="form-control" placeholder="Password" value="" name='password1'>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group input-group-alternative">
+                            <div class="w_150px">
+                              <span class="input-group-text">Confirm Password</span>
+                            </div>
+                            <input type="password" required class="form-control" placeholder="Confirm Password" value="" name='password2'>
+                          </div>
+                        </div>
+                        
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary mt-4">Create account</button>
+                        </div>
+                      </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+{% endblock %}
